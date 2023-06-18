@@ -26,7 +26,7 @@ null # null
 
 - [ ] lexer
   - [x] numbers
-  - [ ] strings
+  - [x] strings
   - [ ] operators
   - [ ] identifiers
   - [ ] comments

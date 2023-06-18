@@ -15,6 +15,7 @@ typedef struct {
 } Error;
 
 void free_error(Error error);
-Error create_error(ErrorType type, char* message, size_t size);
+Error create_error(ErrorType type, size_t msize, char* message);
+Error create_errorf(ErrorType type, size_t msize, char* message, ...);
 
 #endif

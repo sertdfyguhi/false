@@ -16,19 +16,7 @@ typedef enum {
     TT_DIV,
 } TokenType;
 
-static const char* TOKENTYPE_NAMES[] = {
-    "INT",
-    "FLOAT",
-    "BOOL",
-    "STRING",
-    "NULL",
-    "IDENTIFIER",
-    "COMMA",
-    "PLUS",
-    "MINUS",
-    "MUL",
-    "DIV"
-};
+extern const char* TOKENTYPE_NAMES[];
 
 typedef union {
     long i;

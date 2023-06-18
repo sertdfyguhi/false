@@ -21,6 +21,12 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
     while (*code != '\0') {
         if (*code == ' ' || *code == '\t' || *code == '\r' || *code == '\n') {
             code++;
+        } else if (*code == '\'' || *code == '"') {
+            Token token;
+            if (tokenize_string(&code, &token, err_ptr) == -1)
+                return -1;
+
+            append(&tokens, &size, token);
         } else if (isdigit(*code)) {
             Token token;
             if (tokenize_number(&code, &token, err_ptr) == -1)
@@ -28,12 +34,7 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
 
             append(&tokens, &size, token);
         } else {
-            char* message = malloc(sizeof(char) * 22);
-            sprintf(message, "foreign character '%c'", *code);
-
-            Error err = { SyntaxError, message };
-            *err_ptr = err;
-
+            *err_ptr = create_errorf(SyntaxError, 22, "foreign character '%c'", *code);
             return -1;
         }
     }
@@ -53,7 +54,7 @@ int tokenize_number(char** code, Token* token_ptr, Error* err_ptr) {
     while (isdigit(**code) || **code == '.') {
         if (**code == '.') {
             if (is_float) {
-                *err_ptr = create_error(SyntaxError, "multiple decimal point in number", 33);
+                *err_ptr = create_error(SyntaxError, 33, "multiple decimal point in number");
                 return -1;
             }
             is_float = true;
@@ -73,7 +74,55 @@ int tokenize_number(char** code, Token* token_ptr, Error* err_ptr) {
         is_float ? TT_FLOAT : TT_INT,
         tvalue
     };
+    *token_ptr = token;
+    return 0;
+}
 
+const char ESCAPES[] = "trn\"'\\";
+const char ESCAPE_CHARS[] = "\t\r\n\"'\\";
+
+int tokenize_string(char** code, Token* token_ptr, Error* err_ptr) {
+    const char quote = **code;
+
+    char* str = malloc(sizeof(char));
+    str[0] = *++(*code) == quote ? '\0' : **code;
+    size_t size = 1;
+
+    (*code)++;
+    while (**code != quote) {
+        if (**code == '\0') {
+            *err_ptr = create_error(SyntaxError, 23, "unexpected end of file");
+            return -1;
+        }
+
+        str = realloc(str, sizeof(char) * ++size);
+
+        if (**code == '\\') {
+            if (*++(*code) == '\0') {
+                *err_ptr = create_error(SyntaxError, 23, "unexpected end of file");
+                return -1;
+            }
+            const char* escape = strchr(ESCAPES, **code);
+
+            if (escape) {
+                // subtracting the found pointer from the first pointer gets index
+                str[size - 1] = ESCAPE_CHARS[escape - ESCAPES];
+                (*code)++;
+            } else {
+                *err_ptr = create_errorf(SyntaxError, 20, "invalid escape '\\%c'", **code);
+                return -1;
+            }
+        } else {
+            str[size - 1] = *(*code)++;
+        }
+    }
+
+    (*code)++;
+
+    Token token = {
+        TT_STRING,
+        { .s = str }
+    };
     *token_ptr = token;
     return 0;
 }

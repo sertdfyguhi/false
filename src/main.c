@@ -63,6 +63,12 @@ int run(char* code) {
 
     print_tokens(tokens, tsize);
 
+    // completely free tokens
+    for (int i = 0; i < tsize; i++) {
+        if (tokens[i].type == TT_STRING) {
+            free(tokens[i].value.s);
+        }
+    }
     free(tokens);
     return 0;
 }
