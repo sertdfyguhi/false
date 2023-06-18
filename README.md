@@ -27,8 +27,11 @@ null # null
 - [ ] lexer
   - [x] numbers
   - [x] strings
-  - [ ] operators
+  - [x] punctuators & operators (symbols)
   - [ ] identifiers
+  - [ ] keywords
+  - [ ] null
+  - [ ] booleans
   - [ ] comments
 - [ ] parser
 - [ ] interpreter

@@ -26,16 +26,8 @@ void print_token(Token token) {
             printf("\"%s\"", token.value.s);
             break;
 
-        case TT_NULL:
-        case TT_COMMA:
-        case TT_PLUS:
-        case TT_MINUS:
-        case TT_MUL:
-        case TT_DIV:
-            printf("%s", TOKENTYPE_NAMES[token.type]);
-            break;
-
         default:
+            printf("%s", TOKENTYPE_NAMES[token.type]);
             break;
     }
 

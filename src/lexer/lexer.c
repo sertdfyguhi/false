@@ -34,8 +34,20 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
 
             append(&tokens, &size, token);
         } else {
-            *err_ptr = create_errorf(SyntaxError, 22, "foreign character '%c'", *code);
-            return -1;
+            const char* sym = strchr(SYMBOLS, *code);
+
+            if (sym) {
+                Token token = {
+                    // starting index for operators + index
+                    SYM_START_POS + (sym - SYMBOLS),
+                    { .i = 0 }
+                };
+                append(&tokens, &size, token);
+                code++;
+            } else {
+                *err_ptr = create_errorf(SyntaxError, 22, "foreign character '%c'", *code);
+                return -1;
+            }
         }
     }
 
@@ -78,8 +90,23 @@ int tokenize_number(char** code, Token* token_ptr, Error* err_ptr) {
     return 0;
 }
 
-const char ESCAPES[] = "trn\"'\\";
-const char ESCAPE_CHARS[] = "\t\r\n\"'\\";
+const char ESCAPES[] = {
+    't',
+    'r',
+    'n',
+    '"',
+    '\'',
+    '\\'
+};
+
+const char ESCAPES_CHAR[] = {
+    '\t',
+    '\r',
+    '\n',
+    '"',
+    '\'',
+    '\\'
+};
 
 int tokenize_string(char** code, Token* token_ptr, Error* err_ptr) {
     const char quote = **code;
@@ -102,12 +129,11 @@ int tokenize_string(char** code, Token* token_ptr, Error* err_ptr) {
                 *err_ptr = create_error(SyntaxError, 23, "unexpected end of file");
                 return -1;
             }
-            const char* escape = strchr(ESCAPES, **code);
+            const char* escape = strchr(ESCAPES, *(*code)++);
 
             if (escape) {
                 // subtracting the found pointer from the first pointer gets index
-                str[size - 1] = ESCAPE_CHARS[escape - ESCAPES];
-                (*code)++;
+                str[size - 1] = ESCAPES_CHAR[escape - ESCAPES];
             } else {
                 *err_ptr = create_errorf(SyntaxError, 20, "invalid escape '\\%c'", **code);
                 return -1;

@@ -7,9 +7,33 @@ const char* TOKENTYPE_NAMES[] = {
     "STRING",
     "NULL",
     "IDENTIFIER",
+
+    "SEMICOLON",
     "COMMA",
+    "LPAREN",
+    "RPAREN",
+    "LBRACKET",
+    "RBRACKET",
+
     "PLUS",
     "MINUS",
     "MUL",
-    "DIV"
+    "DIV",
+    "POWER",
+};
+
+// operators and punctuators
+const char SYMBOLS[] = {
+    ';',
+    ',',
+    '(',
+    ')',
+    '[',
+    ']',
+
+    '+',
+    '-',
+    '*',
+    '/',
+    '^',
 };
