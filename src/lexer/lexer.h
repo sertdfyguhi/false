@@ -14,5 +14,6 @@ extern const char ESCAPES_CHAR[];
 int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr);
 int tokenize_number(char** code, Token* token_ptr, Error* err_ptr);
 int tokenize_string(char** code, Token* token_ptr, Error* err_ptr);
+int tokenize_identifier(char** code, Token* token_ptr, Error* err_ptr);
 
 #endif

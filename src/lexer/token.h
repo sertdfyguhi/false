@@ -4,17 +4,32 @@
 typedef enum {
     TT_INT, // long
     TT_FLOAT, // double
-    TT_BOOL, // int
     TT_STRING, // char*
-    TT_NULL,
+
     TT_IDENTIFIER,
 
+    TT_TRUE, // boolean
+    TT_FALSE, // boolean
+    TT_NULL,
+
+    TT_IF,
+    TT_ELSE,
+    TT_WHILE,
+    TT_FOR,
+    TT_VAR,
+    TT_FUNC,
+    TT_RETURN,
+
     TT_SEMICOLON,
+    TT_MARK, // exclamation mark
+    TT_EQUAL,
     TT_COMMA,
     TT_LPAREN,
     TT_RPAREN,
     TT_LBRACKET,
     TT_RBRACKET,
+    TT_LCURLY,
+    TT_RCURLY,
 
     TT_PLUS,
     TT_MINUS,
@@ -23,10 +38,16 @@ typedef enum {
     TT_POWER,
 } TokenType;
 
+// keyword token type start position
+#define KW_START_POS 4
+#define KW_END_POS 13
+
 // symbols token type start position
-#define SYM_START_POS 6
+#define SYM_START_POS 14
+#define SYM_END_POS 28
 
 extern const char* TOKENTYPE_NAMES[];
+extern const char* KEYWORDS[];
 extern const char SYMBOLS[];
 
 typedef union {

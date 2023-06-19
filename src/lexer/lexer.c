@@ -33,6 +33,12 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
                 return -1;
 
             append(&tokens, &size, token);
+        } else if (isalpha(*code)) {
+            Token token;
+            if (tokenize_identifier(&code, &token, err_ptr) == -1)
+                return -1;
+
+            append(&tokens, &size, token);
         } else {
             const char* sym = strchr(SYMBOLS, *code);
 
@@ -115,20 +121,26 @@ int tokenize_string(char** code, Token* token_ptr, Error* err_ptr) {
     str[0] = *++(*code) == quote ? '\0' : **code;
     size_t size = 1;
 
+    bool is_escape = false;
+
     (*code)++;
-    while (**code != quote) {
+    while (is_escape || **code != quote) {
         if (**code == '\0') {
             *err_ptr = create_error(SyntaxError, 23, "unexpected end of file");
             return -1;
+        } else if (**code == '\n') {
+            *err_ptr = create_error(SyntaxError, 23, "unexpected end of line");
+            return -1;
+        } else if (!is_escape && **code == '\\') {
+            is_escape = true;
+            (*code)++;
+            continue;
         }
 
         str = realloc(str, sizeof(char) * ++size);
 
-        if (**code == '\\') {
-            if (*++(*code) == '\0') {
-                *err_ptr = create_error(SyntaxError, 23, "unexpected end of file");
-                return -1;
-            }
+        if (is_escape) {
+            is_escape = false;
             const char* escape = strchr(ESCAPES, *(*code)++);
 
             if (escape) {
@@ -148,6 +160,37 @@ int tokenize_string(char** code, Token* token_ptr, Error* err_ptr) {
     Token token = {
         TT_STRING,
         { .s = str }
+    };
+    *token_ptr = token;
+    return 0;
+}
+
+int tokenize_identifier(char** code, Token* token_ptr, Error* err_ptr) {
+    char* iden = malloc(sizeof(char));
+    iden[0] = *(*code)++;
+    size_t size = 1;
+
+    while (isalpha(**code)) {
+        iden = realloc(iden, sizeof(char) * ++size);
+        iden[size - 1] = *(*code)++;
+    }
+
+    (*code)++;
+
+    bool is_keyword = false;
+    int i;
+
+    for (i = 0; i < KW_END_POS - KW_START_POS + 1; i++) {
+        // check if string are equal
+        if (strcmp(KEYWORDS[i], iden) == 0) {
+            is_keyword = true;
+            break;
+        }
+    }
+
+    Token token = {
+        is_keyword ? KW_START_POS + i : TT_IDENTIFIER,
+        { .s = iden }
     };
     *token_ptr = token;
     return 0;

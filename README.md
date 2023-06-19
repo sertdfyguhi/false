@@ -28,10 +28,11 @@ null # null
   - [x] numbers
   - [x] strings
   - [x] punctuators & operators (symbols)
-  - [ ] identifiers
-  - [ ] keywords
-  - [ ] null
-  - [ ] booleans
+  - [x] identifiers
+  - [x] keywords
+  - [x] null
+  - [x] booleans
   - [ ] comments
 - [ ] parser
 - [ ] interpreter
+- [ ] optimizer

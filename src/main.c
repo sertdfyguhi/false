@@ -17,10 +17,6 @@ void print_token(Token token) {
             printf("%f", token.value.f);
             break;
 
-        case TT_BOOL:
-            printf("%s", token.value.i ? "true" : "false");
-            break;
-
         case TT_STRING:
         case TT_IDENTIFIER:
             printf("\"%s\"", token.value.s);
