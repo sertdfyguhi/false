@@ -21,6 +21,10 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
     while (*code != '\0') {
         if (*code == ' ' || *code == '\t' || *code == '\r' || *code == '\n') {
             code++;
+        } else if (*code == '#') {
+            while (*code != '\n' && *code != '\0') {
+                code++;
+            }
         } else if (*code == '\'' || *code == '"') {
             Token token;
             if (tokenize_string(&code, &token, err_ptr) == -1)
@@ -170,12 +174,12 @@ int tokenize_identifier(char** code, Token* token_ptr, Error* err_ptr) {
     iden[0] = *(*code)++;
     size_t size = 1;
 
-    while (isalpha(**code)) {
+    while (isalnum(**code)) {
         iden = realloc(iden, sizeof(char) * ++size);
         iden[size - 1] = *(*code)++;
     }
 
-    (*code)++;
+    // (*code)++;
 
     bool is_keyword = false;
     int i;

@@ -1,34 +1,14 @@
-2
-2.222
-"string"
+var !immutable = "value";
+var variable = "value";
 
-identifier
-
-true
-false
-null
-
-if
-else
-while
-for
-var
-func
-return
-
-";\
-,
-!
-=
-(
-)
-[
-]
-{
+func function(arg1, arg2) {
+  return arg1 + arg2;
 }
 
-+
--
-*
-/
-^
+# types
+"string" # string
+false # boolean
+null # null
+123 # integer
+123.123 # float
+[1, 2, 3](0) # array

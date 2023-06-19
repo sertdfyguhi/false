@@ -24,7 +24,7 @@ null # null
 
 # todo
 
-- [ ] lexer
+- [x] lexer
   - [x] numbers
   - [x] strings
   - [x] punctuators & operators (symbols)
@@ -32,7 +32,7 @@ null # null
   - [x] keywords
   - [x] null
   - [x] booleans
-  - [ ] comments
+  - [x] comments
 - [ ] parser
 - [ ] interpreter
 - [ ] optimizer
