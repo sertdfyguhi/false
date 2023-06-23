@@ -4,60 +4,46 @@
 #include "error.h"
 #include "lexer/lexer.h"
 #include "lexer/token.h"
+#include "parser/parser.h"
+#include "print.h"
 
-void print_token(Token token) {
-    printf("%s(", TOKENTYPE_NAMES[token.type]);
-
-    switch (token.type) {
-        case TT_INT:
-            printf("%ld", token.value.i);
-            break;
-
-        case TT_FLOAT:
-            printf("%f", token.value.f);
-            break;
-
-        case TT_STRING:
-        case TT_IDENTIFIER:
-            printf("\"%s\"", token.value.s);
-            break;
-
-        default:
-            printf("%s", TOKENTYPE_NAMES[token.type]);
-            break;
-    }
-
-    printf(")");
-}
-
-void print_tokens(Token* tokens, size_t size) {
-    for (int i = 0; i < size; i++) {
-        print_token(tokens[i]);
-        printf(", ");
-    }
-    printf("\n");
+int handle_error(Error error) {
+    printf("%s: %s\n", ERROR_NAMES[error.type], error.message);
+    free_error(error);
+    return -1;
 }
 
 int run(char* code) {
-    Token* tokens;
-    size_t tsize;
     Error error;
 
-    if (tokenize(code, &tokens, &tsize, &error) == -1) {
-        printf("%s: %s\n", ERROR_NAMES[error.type], error.message);
-        free_error(error);
-        return -1;
-    }
+    Token* tokens;
+    size_t tsize;
+
+    if (tokenize(code, &tokens, &tsize, &error) == -1)
+        return handle_error(error);
 
     print_tokens(tokens, tsize);
 
-    // completely free tokens
+    Node* nodes;
+    size_t nsize;
+
+    if (parse(tokens, tsize, &nodes, &nsize, &error) == -1)
+        return handle_error(error);
+
+    print_nodes(nodes, nsize);
+
+    // free tokens
     for (int i = 0; i < tsize; i++) {
         if (tokens[i].type == TT_STRING) {
             free(tokens[i].value.s);
         }
     }
     free(tokens);
+
+    // free nodes
+    // for (int i = 0; i < nsize; i++) {
+
+    // }
     return 0;
 }
 

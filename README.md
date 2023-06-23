@@ -34,5 +34,10 @@ null # null
   - [x] booleans
   - [x] comments
 - [ ] parser
+  - [ ] operators
+  - [ ] functions
 - [ ] interpreter
+- [ ] ternary
+- [ ] hexadecimal & binary numbers
+- [ ] binary operations
 - [ ] optimizer

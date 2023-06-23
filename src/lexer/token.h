@@ -20,7 +20,6 @@ typedef enum {
     TT_FUNC,
     TT_RETURN,
 
-    TT_SEMICOLON,
     TT_MARK, // exclamation mark
     TT_EQUAL,
     TT_COMMA,
@@ -36,17 +35,19 @@ typedef enum {
     TT_MUL,
     TT_DIV,
     TT_POWER,
+
+    TT_BREAK, // a break in code, semicolon / newline
 } TokenType;
 
 // keyword token type start position
 #define KW_START_POS 4
 #define KW_END_POS 13
 
-// symbols token type start position
+// symbols & operator token type start position
 #define SYM_START_POS 14
-#define SYM_END_POS 28
+// #define OP_START_POS 23
+#define SYM_END_POS 27
 
-extern const char* TOKENTYPE_NAMES[];
 extern const char* KEYWORDS[];
 extern const char SYMBOLS[];
 
@@ -57,7 +58,7 @@ typedef union {
 } TokenValue;
 
 typedef struct {
-    int type;
+    TokenType type;
     TokenValue value;
 } Token;
 

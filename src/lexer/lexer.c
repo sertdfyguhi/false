@@ -19,7 +19,11 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
     size_t size = 0;
 
     while (*code != '\0') {
-        if (*code == ' ' || *code == '\t' || *code == '\r' || *code == '\n') {
+        if (*code == ' ' || *code == '\t' || *code == '\r') {
+            code++;
+        } else if (*code == ';' || *code == '\n') {
+            Token token = { TT_BREAK, { .i = 0 } };
+            append(&tokens, &size, token);
             code++;
         } else if (*code == '#') {
             while (*code != '\n' && *code != '\0') {
@@ -37,7 +41,7 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
                 return -1;
 
             append(&tokens, &size, token);
-        } else if (isalpha(*code)) {
+        } else if (isalpha(*code) || *code == '_') {
             Token token;
             if (tokenize_identifier(&code, &token, err_ptr) == -1)
                 return -1;
@@ -174,12 +178,10 @@ int tokenize_identifier(char** code, Token* token_ptr, Error* err_ptr) {
     iden[0] = *(*code)++;
     size_t size = 1;
 
-    while (isalnum(**code)) {
+    while (isalnum(**code) || **code == '_') {
         iden = realloc(iden, sizeof(char) * ++size);
         iden[size - 1] = *(*code)++;
     }
-
-    // (*code)++;
 
     bool is_keyword = false;
     int i;
