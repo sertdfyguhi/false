@@ -1,9 +1,10 @@
 #ifndef LEXER_H
 #define LEXER_H
 
+#include <stddef.h>
+
 #include "../error.h"
 #include "token.h"
-#include <stdlib.h>
 
 extern const char SYMBOLS[];
 extern const TokenType SYMBOLS_TT[];

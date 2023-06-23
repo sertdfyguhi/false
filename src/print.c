@@ -1,3 +1,5 @@
+#include "print.h"
+
 #include <stdio.h>
 
 #include "lexer/token.h"
@@ -98,8 +100,6 @@ void print_tokens(Token* tokens, size_t size) {
     }
     printf("\n");
 }
-
-void print_node(Node node);
 
 void print_nv(NodeValue nv) {
     printf("%s(", NODEVALUE_NAMES[nv.type]);

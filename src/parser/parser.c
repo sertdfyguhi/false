@@ -88,7 +88,7 @@ int parse(Token* tokens, size_t tsize, Node** nodes_ptr, size_t* nsize_ptr, Erro
             case TT_DIV:
             case TT_POWER: {
                 if (nodes[size - 1].type == NT_EMPTY) {
-                    *err_ptr = create_error(SyntaxError, 20, "unexpected operator");
+                    *err_ptr = create_errorf(SyntaxError, 24, "unexpected operator '%c'", SYMBOLS[(*tokens).type - SYM_START_POS]);
                     return -1;
                 }
 

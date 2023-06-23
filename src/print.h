@@ -1,7 +1,10 @@
 #ifndef PRINT_H
 #define PRINT_H
 
-#include <stdlib.h>
+#include <stddef.h>
+
+#include "lexer/token.h"
+#include "parser/nodes.h"
 
 extern const char* TOKENTYPE_NAMES[];
 
