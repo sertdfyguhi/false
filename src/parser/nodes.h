@@ -1,5 +1,5 @@
-#ifndef NODE_H
-#define NODE_H
+#ifndef NODES_H
+#define NODES_H
 
 #include "../error.h"
 #include "../lexer/token.h"
@@ -16,7 +16,6 @@ typedef enum {
 
     NVT_OPERATOR,
     NVT_NODE,
-    NVT_EMPTY,
 } NodeValueType;
 
 typedef struct Node Node;
@@ -37,23 +36,22 @@ typedef enum {
     NT_BINOP,
     NT_UNARYOP,
     NT_ASSIGN,
-
-    NT_EMPTY,
+    NT_IF,
+    NT_FOR,
+    NT_WHILE,
 } NodeType;
 
 struct Node {
     NodeType type;
 
-    NodeValue left;
-    NodeValue value;
-    NodeValue right;
+    NodeValue* left;
+    NodeValue* value;
+    NodeValue* right;
 };
 
 extern const char* NODETYPE_NAMES[];
-extern const NodeValue EMPTY_NV;
-extern const Node EMPTY_NODE;
-
-NodeValue create_node_nv(Node* node);
-int conv_tval_to_nv(Token token, NodeValue* nv_ptr, Error* err_ptr);
+extern const char* NODEVALUE_NAMES[];
+NodeValue* create_nv_from_node(Node* node);
+int create_nv_from_tval(Token token, NodeValue* nv_ptr, Error* err_ptr);
 
 #endif

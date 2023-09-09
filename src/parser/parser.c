@@ -1,136 +1,133 @@
 #include "parser.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "../bool.h"
 #include "../error.h"
 #include "../lexer/token.h"
 #include "nodes.h"
 
-static Node* get_node_r_leaf(Node* node, TokenType end) {
-    Node* n = node;
+#include <stdio.h>
+#include <stdlib.h>
 
-    // checks if right is operator and if so check for the end tt
-    while (n->right.type == NVT_NODE && (n->right.value.n->type == NVT_OPERATOR || n->right.value.n->value.value.i != end)) {
-        n = n->right.value.n;
-    }
+#define next                                       \
+    if (next_EOS(tokens, i, tsize, err_ptr) == -1) \
+        return -1;
 
-    return n;
+static void append(Node** arr, size_t* size, Node val) {
+    *arr = realloc(*arr, sizeof(Node) * ++(*size));
+    (*arr)[*size - 1] = val;
 }
 
-// advances to the next token while checking for EOF
-static int EOF_advance(Token** tokens, Token* start, size_t size, Error* err_ptr) {
-    if ((*tokens - start) > size) {
-        *err_ptr = create_error(SyntaxError, 23, "unexpected end of file");
+static int next_EOS(Token* tokens, size_t* i, size_t tsize, Error* err_ptr) {
+    if (++(*i) >= tsize || tokens[*i].type == TT_SEMICOLON) {
+        *err_ptr = create_error(SyntaxError, 28, "unexpected end of statement");
         return -1;
+    } else {
+        return 0;
+    }
+}
+
+int parse(Token* tokens, size_t tsize, Node** statements_ptr, size_t* stmtsize_ptr, Error* err_ptr) {
+    Node* statements = malloc(sizeof(Node));
+    size_t size = 1;
+
+    // at max value so it rollsback on first iteration
+    size_t i = SIZE_MAX;
+
+    Node ast;
+
+    while (++i < tsize) {
+        switch (tokens[i].type) {
+            case TT_VAR:
+                if (parse_assign(tokens, &i, tsize, &ast, err_ptr) == -1)
+                    return -1;
+                break;
+
+            case TT_IF:
+                if (parse_block(NT_IF, tokens, &i, tsize, &ast, err_ptr) == -1)
+                    return -1;
+                break;
+
+            case TT_FOR:;
+                if (parse_block(NT_FOR, tokens, &i, tsize, &ast, err_ptr) == -1)
+                    return -1;
+                break;
+
+            case TT_WHILE:
+                if (parse_block(NT_WHILE, tokens, &i, tsize, &ast, err_ptr) == -1)
+                    return -1;
+                break;
+
+            case TT_IDENTIFIER:
+                /* code */
+                break;
+
+            // math op
+            case TT_INT:
+            case TT_FLOAT:
+            case TT_MINUS: // unary
+            case TT_PLUS:
+                /* code */
+                break;
+
+            default:
+                break;
+        }
+
+        append(&statements, &size, ast);
     }
 
-    (*tokens)++;
+    *statements_ptr = statements;
+    *stmtsize_ptr = size;
     return 0;
 }
 
-int parse(Token* tokens, size_t tsize, Node** nodes_ptr, size_t* nsize_ptr, Error* err_ptr) {
-    Node* nodes = malloc(sizeof(Node));
-    nodes[0] = EMPTY_NODE;
-    size_t size = 1;
+int parse_assign(Token* tokens, size_t* i, size_t tsize, Node* ast_ptr, Error* err_ptr) {
+    next;
 
-    Token* start = tokens;
+    if (tokens[*i].type == TT_IDENTIFIER) {
+        NodeValue* name_nv = malloc(sizeof(NodeValue));
+        name_nv->type = NVT_STRING;
+        name_nv->value.s = tokens[*i].value.s;
+        next;
 
-    while ((tokens - start) < tsize) {
-        switch (tokens->type) {
-            case TT_BREAK: {
-                if (nodes[size - 1].type != NT_EMPTY) {
-                    nodes = realloc(nodes, sizeof(Node) * ++size);
-                    nodes[size - 1] = EMPTY_NODE;
-                }
-                tokens++;
-                break;
-            }
+        if (tokens[*i].type == TT_EQUAL) {
+            next;
 
-            case TT_PLUS:
-            case TT_MINUS: {
-                const TokenType op_type = tokens->type;
-                if (EOF_advance(&tokens, start, tsize, err_ptr) == -1)
-                    return -1;
+            Node* value = malloc(sizeof(Node));
+            if (parse_expr(tokens, i, tsize, value, err_ptr) == -1)
+                return -1;
 
-                NodeValue nv;
-                if (conv_tval_to_nv(*tokens, &nv, err_ptr) == -1)
-                    return -1;
+            ast_ptr->type = NT_ASSIGN;
+            ast_ptr->left = name_nv;
+            ast_ptr->value = create_nv_from_node(value);
+            return 0;
+        } else {
+            *err_ptr = create_errorf(
+                SyntaxError,
+                29,
+                "expected =, found %s",
+                TOKENTYPE_NAMES[tokens[*i].type]);
 
-                bool is_unary = nodes[size - 1].type == NT_EMPTY;
-
-                if (is_unary) {
-                    nodes[size - 1].left = EMPTY_NV;
-                } else {
-                    if (nodes[size - 1].type == NT_VALUE) {
-                        nodes[size - 1].left = nodes[size - 1].value;
-                    } else {
-                        Node* v = malloc(sizeof(Node));
-                        memcpy(v, &nodes[size - 1], sizeof(Node));
-
-                        nodes[size - 1].left = create_node_nv(v);
-                    }
-                }
-
-                nodes[size - 1].type = is_unary ? NT_UNARYOP : NT_BINOP;
-
-                nodes[size - 1].value.type = NVT_OPERATOR;
-                nodes[size - 1].value.value.i = op_type;
-                nodes[size - 1].right = nv;
-
-                tokens++;
-                break;
-            }
-
-            case TT_MUL:
-            case TT_DIV:
-            case TT_POWER: {
-                if (nodes[size - 1].type == NT_EMPTY) {
-                    *err_ptr = create_errorf(SyntaxError, 24, "unexpected operator '%c'", SYMBOLS[(*tokens).type - SYM_START_POS]);
-                    return -1;
-                }
-
-                const TokenType op_type = tokens->type;
-                if (EOF_advance(&tokens, start, tsize, err_ptr) == -1)
-                    return -1;
-
-                NodeValue nv;
-                if (conv_tval_to_nv(*tokens, &nv, err_ptr) == -1)
-                    return -1;
-
-                Node* leaf = get_node_r_leaf(&nodes[size - 1], op_type == TT_POWER ? -1 : TT_POWER);
-                Node* node = malloc(sizeof(Node));
-                node->type = NT_BINOP;
-                node->left = leaf->right;
-                node->value.type = NVT_OPERATOR;
-                node->value.value.i = op_type;
-                node->right = nv;
-
-                leaf->right = create_node_nv(node);
-                tokens++;
-                break;
-            }
-
-            default: {
-                if (nodes[size - 1].type != NT_EMPTY) {
-                    *err_ptr = create_error(SyntaxError, 18, "unexpected number");
-                    return -1;
-                }
-
-                NodeValue nv;
-                if (conv_tval_to_nv(*tokens++, &nv, err_ptr) == -1)
-                    return -1;
-
-                Node node = { NT_VALUE, EMPTY_NV, nv, EMPTY_NV };
-                nodes[size - 1] = node;
-                break;
-            }
-        };
+            return -1;
+        }
+    } else {
+        *err_ptr = create_errorf(SyntaxError, 22, "unexpected %s", TOKENTYPE_NAMES[tokens[*i].type]);
+        return -1;
     }
 
-    *nodes_ptr = nodes;
-    *nsize_ptr = size;
+    return 0;
+}
+
+int parse_block(NodeType type, Token* tokens, size_t* i, size_t tsize, Node* ast_ptr, Error* err_ptr) {
+    return 0;
+}
+
+int parse_value(Token* tokens, size_t* i, size_t tsize, NodeValue* nv_ptr, Error* err_ptr) {
+    return 0;
+}
+
+int parse_expr(Token* tokens, size_t* i, size_t tsize, Node* ast_ptr, Error* err_ptr) {
+    while (next_EOS(tokens, i, tsize, NULL) != -1) {
+    }
+
     return 0;
 }

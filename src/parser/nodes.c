@@ -1,26 +1,18 @@
 #include "nodes.h"
 
-#include "../bool.h"
 #include "../error.h"
 #include "../lexer/token.h"
+#include <stdbool.h>
 
-const NodeValue EMPTY_NV = { NVT_EMPTY, { .i = 0 } };
-const Node EMPTY_NODE = {
-    NT_EMPTY,
-    { NVT_EMPTY, { .i = 0 } },
-    { NVT_EMPTY, { .i = 0 } },
-    { NVT_EMPTY, { .i = 0 } },
-};
+NodeValue* create_nv_from_node(Node* node) {
+    NodeValue* nv = malloc(sizeof(NodeValue));
+    nv->type = NVT_NODE;
+    nv->value.n = node;
 
-NodeValue create_node_nv(Node* node) {
-    // if (node->type == NT_VALUE)
-    //     return node->value;
-
-    NodeValue nv = { NVT_NODE, { .n = node } };
     return nv;
 }
 
-int conv_tval_to_nv(Token token, NodeValue* nv_ptr, Error* err_ptr) {
+int create_nv_from_tval(Token token, NodeValue* nv_ptr, Error* err_ptr) {
     switch (token.type) {
         case TT_INT:
             nv_ptr->type = NVT_INT;

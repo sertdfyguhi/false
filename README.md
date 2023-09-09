@@ -14,12 +14,12 @@ func function(arg1, arg2) {
 }
 
 # types
-"string" # string
-false # boolean
-null # null
-123 # integer
-123.123 # float
-[1, 2, 3](0) # array
+"string"; # string
+false; # boolean
+null; # null
+123; # integer
+123.123; # float
+[1, 2, 3](0); # array
 ```
 
 # todo
@@ -34,9 +34,11 @@ null # null
   - [x] booleans
   - [x] comments
 - [ ] parser
-  - [ ] operators
+  - [x] operators
+  - [ ] assign
   - [ ] functions
 - [ ] interpreter
+- [ ] modulo
 - [ ] ternary
 - [ ] hexadecimal & binary numbers
 - [ ] binary operations

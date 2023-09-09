@@ -1,6 +1,10 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 
+extern const char* TOKENTYPE_NAMES[];
+
+// TODO: object.child()
+// TODO: ==, !=..
 typedef enum {
     TT_INT, // long
     TT_FLOAT, // double
@@ -20,7 +24,7 @@ typedef enum {
     TT_FUNC,
     TT_RETURN,
 
-    TT_MARK, // exclamation mark
+    TT_NOT, // exclamation mark
     TT_EQUAL,
     TT_COMMA,
     TT_LPAREN,
@@ -36,7 +40,7 @@ typedef enum {
     TT_DIV,
     TT_POWER,
 
-    TT_BREAK, // a break in code, semicolon / newline
+    TT_SEMICOLON,
 } TokenType;
 
 // keyword token type start position

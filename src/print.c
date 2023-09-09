@@ -5,69 +5,6 @@
 #include "lexer/token.h"
 #include "parser/nodes.h"
 
-const char* TOKENTYPE_NAMES[] = {
-    "INT",
-    "FLOAT",
-    "STRING",
-
-    "IDENTIFIER",
-
-    "TRUE",
-    "FALSE",
-    "NULL",
-
-    "IF",
-    "ELSE",
-    "WHILE",
-    "FOR",
-    "VAR",
-    "FUNC",
-    "RETURN",
-
-    "COMMA",
-    "MARK",
-    "EQUAL",
-    "LPAREN",
-    "RPAREN",
-    "LBRACKET",
-    "RBRACKET",
-    "LCURLY",
-    "RCURLY",
-
-    "PLUS",
-    "MINUS",
-    "MUL",
-    "DIV",
-    "POWER",
-
-    "BREAK",
-};
-
-const char* NODETYPE_NAMES[] = {
-    "VALUE",
-
-    "BINOP",
-    "UNARYOP",
-    "ASSIGN",
-
-    "EMPTY",
-};
-
-const char* NODEVALUE_NAMES[] = {
-    "INT",
-    "FLOAT",
-    "STRING",
-    "TRUE",
-    "FALSE",
-    "NULL",
-
-    "IDENTIFIER",
-
-    "OPERATOR",
-    "NODE",
-    "EMPTY",
-};
-
 void print_token(Token token) {
     printf("%s(", TOKENTYPE_NAMES[token.type]);
 
@@ -133,19 +70,19 @@ void print_nv(NodeValue nv) {
     printf(")");
 }
 
-void print_node(Node node) {
-    printf("%s(", NODETYPE_NAMES[node.type]);
-    print_nv(node.left);
-    printf(", ");
-    print_nv(node.value);
-    printf(", ");
-    print_nv(node.right);
-    printf(")");
-}
+// void print_node(Node node) {
+//     printf("%s(", NODETYPE_NAMES[node.type]);
+//     print_nv(node.left);
+//     printf(", ");
+//     print_nv(node.value);
+//     printf(", ");
+//     print_nv(node.right);
+//     printf(")");
+// }
 
-void print_nodes(Node* nodes, size_t size) {
-    for (int i = 0; i < size; i++) {
-        print_node(nodes[i]);
-        printf("\n");
-    }
-}
+// void print_nodes(Node* nodes, size_t size) {
+//     for (int i = 0; i < size; i++) {
+//         print_node(nodes[i]);
+//         printf("\n");
+//     }
+// }

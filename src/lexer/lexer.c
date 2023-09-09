@@ -1,11 +1,11 @@
 #include "lexer.h"
 
 #include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../bool.h"
 #include "../error.h"
 #include "token.h"
 
@@ -18,51 +18,43 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
     Token* tokens = malloc(sizeof(Token));
     size_t size = 0;
 
+    Token token;
+
     while (*code != '\0') {
-        if (*code == ' ' || *code == '\t' || *code == '\r') {
+        if (*code == ' ' || *code == '\t' || *code == '\r' || *code == '\n') {
             code++;
-        } else if (*code == ';' || *code == '\n') {
-            Token token = { TT_BREAK, { .i = 0 } };
-            append(&tokens, &size, token);
+        } else if (*code == ';') {
+            token.type = TT_SEMICOLON;
+            token.value.i = 0;
             code++;
         } else if (*code == '#') {
             while (*code != '\n' && *code != '\0') {
                 code++;
             }
         } else if (*code == '\'' || *code == '"') {
-            Token token;
             if (tokenize_string(&code, &token, err_ptr) == -1)
                 return -1;
-
-            append(&tokens, &size, token);
         } else if (isdigit(*code)) {
-            Token token;
             if (tokenize_number(&code, &token, err_ptr) == -1)
                 return -1;
-
-            append(&tokens, &size, token);
         } else if (isalpha(*code) || *code == '_') {
-            Token token;
             if (tokenize_identifier(&code, &token, err_ptr) == -1)
                 return -1;
-
-            append(&tokens, &size, token);
         } else {
             const char* sym = strchr(SYMBOLS, *code);
 
             if (sym) {
-                Token token = {
-                    // starting index for operators + index
-                    SYM_START_POS + (sym - SYMBOLS),
-                    { .i = 0 }
-                };
-                append(&tokens, &size, token);
+                // starting index for operators + index
+                token.type = SYM_START_POS + (sym - SYMBOLS);
+                token.value.i = 0;
                 code++;
             } else {
                 *err_ptr = create_errorf(SyntaxError, 22, "foreign character '%c'", *code);
                 return -1;
             }
         }
+
+        append(&tokens, &size, token);
     }
 
     *tsize_ptr = size;
