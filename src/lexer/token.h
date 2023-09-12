@@ -39,6 +39,7 @@ typedef enum {
     TT_MUL,
     TT_DIV,
     TT_POWER,
+    TT_MOD,
 
     TT_SEMICOLON,
 } TokenType;
@@ -49,8 +50,7 @@ typedef enum {
 
 // symbols & operator token type start position
 #define SYM_START_POS 14
-// #define OP_START_POS 23
-#define SYM_END_POS 27
+#define SYM_END_POS 28
 
 extern const char* KEYWORDS[];
 extern const char SYMBOLS[];

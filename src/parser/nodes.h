@@ -3,6 +3,7 @@
 
 #include "../error.h"
 #include "../lexer/token.h"
+#include <stdlib.h>
 
 typedef enum {
     NVT_INT,
@@ -33,8 +34,14 @@ typedef struct {
 typedef enum {
     NT_VALUE,
 
-    NT_BINOP,
-    NT_UNARYOP,
+    NT_ADD,
+    NT_SUB,
+    NT_MUL,
+    NT_DIV,
+    NT_POWER,
+    NT_MOD,
+
+    NT_UNARY,
     NT_ASSIGN,
     NT_IF,
     NT_FOR,

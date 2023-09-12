@@ -3,6 +3,39 @@
 #include "../error.h"
 #include "../lexer/token.h"
 #include <stdbool.h>
+#include <stdlib.h>
+
+const char* NODETYPE_NAMES[] = {
+    "VALUE",
+
+    "ADD",
+    "SUB",
+    "MUL",
+    "DIV",
+    "POWER",
+    "MODULO",
+
+    "UNARY",
+    "ASSIGN",
+
+    "IF",
+    "FOR",
+    "WHILE",
+};
+
+const char* NODEVALUE_NAMES[] = {
+    "INT",
+    "FLOAT",
+    "STRING",
+    "TRUE",
+    "FALSE",
+    "NULL",
+
+    "IDENTIFIER",
+
+    "OPERATOR",
+    "NODE",
+};
 
 NodeValue* create_nv_from_node(Node* node) {
     NodeValue* nv = malloc(sizeof(NodeValue));

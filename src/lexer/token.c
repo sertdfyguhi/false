@@ -34,6 +34,7 @@ const char* TOKENTYPE_NAMES[] = {
     "MUL",
     "DIV",
     "POWER",
+    "MOD",
 
     "SEMICOLON",
 };
@@ -70,4 +71,5 @@ const char SYMBOLS[] = {
     '*',
     '/',
     '^',
+    '%',
 };

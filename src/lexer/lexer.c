@@ -18,11 +18,12 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
     Token* tokens = malloc(sizeof(Token));
     size_t size = 0;
 
-    Token token;
-
     while (*code != '\0') {
+        Token token;
+
         if (*code == ' ' || *code == '\t' || *code == '\r' || *code == '\n') {
             code++;
+            continue;
         } else if (*code == ';') {
             token.type = TT_SEMICOLON;
             token.value.i = 0;
@@ -31,6 +32,7 @@ int tokenize(char* code, Token** tokens_ptr, size_t* tsize_ptr, Error* err_ptr) 
             while (*code != '\n' && *code != '\0') {
                 code++;
             }
+            continue;
         } else if (*code == '\'' || *code == '"') {
             if (tokenize_string(&code, &token, err_ptr) == -1)
                 return -1;

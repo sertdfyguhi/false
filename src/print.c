@@ -38,29 +38,29 @@ void print_tokens(Token* tokens, size_t size) {
     printf("\n");
 }
 
-void print_nv(NodeValue nv) {
-    printf("%s(", NODEVALUE_NAMES[nv.type]);
+void print_nv(NodeValue* nv) {
+    printf("%s(", NODEVALUE_NAMES[nv->type]);
 
-    switch (nv.type) {
+    switch (nv->type) {
         case NVT_INT:
-            printf("%ld", nv.value.i);
+            printf("%ld", nv->value.i);
             break;
 
         case NVT_FLOAT:
-            printf("%f", nv.value.f);
+            printf("%f", nv->value.f);
             break;
 
         case NVT_STRING:
         case NVT_IDENTIFIER:
-            printf("\"%s\"", nv.value.s);
+            printf("\"%s\"", nv->value.s);
             break;
 
         case NVT_OPERATOR:
-            printf("%c", SYMBOLS[nv.value.i - SYM_START_POS]);
+            printf("%c", SYMBOLS[nv->value.i - SYM_START_POS]);
             break;
 
         case NVT_NODE:
-            print_node(*nv.value.n);
+            print_node(*(nv->value.n));
             break;
 
         default:
@@ -70,19 +70,19 @@ void print_nv(NodeValue nv) {
     printf(")");
 }
 
-// void print_node(Node node) {
-//     printf("%s(", NODETYPE_NAMES[node.type]);
-//     print_nv(node.left);
-//     printf(", ");
-//     print_nv(node.value);
-//     printf(", ");
-//     print_nv(node.right);
-//     printf(")");
-// }
+void print_node(Node node) {
+    printf("%s(", NODETYPE_NAMES[node.type]);
+    print_nv(node.left);
+    printf(", ");
+    print_nv(node.value);
+    printf(", ");
+    print_nv(node.right);
+    printf(")");
+}
 
-// void print_nodes(Node* nodes, size_t size) {
-//     for (int i = 0; i < size; i++) {
-//         print_node(nodes[i]);
-//         printf("\n");
-//     }
-// }
+void print_nodes(Node* nodes, size_t size) {
+    for (int i = 0; i < size; i++) {
+        print_node(nodes[i]);
+        printf("\n");
+    }
+}

@@ -30,15 +30,16 @@ int run(char* code) {
     if (parse(tokens, tsize, &nodes, &nsize, &error) == -1)
         return handle_error(error);
 
+    printf("%lu\n", nsize);
     print_nodes(nodes, nsize);
 
     // free tokens
-    for (int i = 0; i < tsize; i++) {
-        if (tokens[i].type == TT_STRING) {
-            free(tokens[i].value.s);
-        }
-    }
-    free(tokens);
+    // for (int i = 0; i < tsize; i++) {
+    //     if (tokens[i].type == TT_STRING) {
+    //         free(tokens[i].value.s);
+    //     }
+    // }
+    // free(tokens);
 
     // free nodes
     // for (int i = 0; i < nsize; i++) {
@@ -69,7 +70,6 @@ int main(int argc, char* argv[]) {
         contents[size - 1] = c;
     }
 
-    int s = run(contents);
-    free(contents);
-    return s == -1;
+    int status = run(contents);
+    return status == -1;
 }
